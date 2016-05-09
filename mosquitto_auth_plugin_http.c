@@ -39,7 +39,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define DEFAULT_URI "https://region-a.geo-1.identity.hpcloudsvc.com:35357/v2.0/tokens"
 #endif
 
-static char *keystone_uri = NULL;
+static char *http_uri = NULL;
 static char *http_proxy = NULL;
 
 #ifndef TMPLEN
@@ -63,18 +63,18 @@ int mosquitto_auth_plugin_init(void **user_data,
 	fprintf(stderr, "AuthOptions: key=%s, val=%s\n", auth_opts[i].key,
 		auth_opts[i].value);
 #endif
-	if (strncmp(auth_opts[i].key, "keystone_uri", 12) == 0) {
-	    keystone_uri = auth_opts[i].value;
+	if (strncmp(auth_opts[i].key, "http_uri", 12) == 0) {
+	    http_uri = auth_opts[i].value;
 	} else if (strncmp(auth_opts[i].key, "http_proxy", 10) == 0) {
 	    http_proxy = auth_opts[i].value;
 	}
     }
 
-    if (keystone_uri == NULL) {
-	keystone_uri = DEFAULT_URI;
+    if (http_uri == NULL) {
+	http_uri = DEFAULT_URI;
     }
 #ifdef MQAP_DEBUG
-    fprintf(stderr, "URI = %s; proxy = %s\n", keystone_uri,
+    fprintf(stderr, "URI = %s; proxy = %s\n", http_uri,
 	    http_proxy ? http_proxy : "null");
 #endif
     return (MOSQ_ERR_SUCCESS);
@@ -105,8 +105,14 @@ int mosquitto_auth_acl_check(void *user_data, const char *clientid,
 			     const char *username, const char *topic,
 			     int access)
 {
-    /* For the moment we're assuming that if someone can log in then they can do all sorts of stuff */
+
+#ifndef MQAP_ACL_DENY
+    /* If for the moment we're assuming that if anyone can log in then can do all sorts of stuff */
     return (MOSQ_ERR_SUCCESS);
+#else
+    /* If for the moment we're assuming that we are using another method for ACL verification */
+    return (MOSQ_ERR_ACL_DENIED);
+#endif
 }
 
 static int cb_write_func(char *data, size_t size, size_t num,
@@ -125,7 +131,7 @@ int mosquitto_auth_unpwd_check(void *user_data, const char *username,
 			       const char *password)
 {
     const char *fmt =
-	"{auth\":{\"passwordCredentials\":{\"username\":\"%s\", \"password\":\"%s\"}}}";
+	"{\"username\":\"%s\", \"password\":\"%s\"}";
 
     struct curl_slist *headers = NULL;
 
@@ -170,7 +176,7 @@ int mosquitto_auth_unpwd_check(void *user_data, const char *username,
     headers = curl_slist_append(headers, "Accept: application/json");
 
     curl_easy_setopt(ch, CURLOPT_POST, 1L);
-    curl_easy_setopt(ch, CURLOPT_URL, keystone_uri);
+    curl_easy_setopt(ch, CURLOPT_URL, http_uri);
     curl_easy_setopt(ch, CURLOPT_POSTFIELDS, data);
     curl_easy_setopt(ch, CURLOPT_POSTFIELDSIZE, strlen(data));
     curl_easy_setopt(ch, CURLOPT_HTTPHEADER, headers);
