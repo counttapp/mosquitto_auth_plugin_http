@@ -1,7 +1,7 @@
 CC=gcc
 MOSQUITTO=${BUILD_DIR}/mosquitto-${MOSQUITTO_VERSION}
 INC=-I. -I$(MOSQUITTO)/lib -I$(MOSQUITTO)/src
-CFLAGS=-Wall -fpic -DMQAP_DEBUG
+override CFLAGS += -Wall -fpic -DMQAP_DEBUG
 
 LIBS=-lcurl
 OBJ=mosquitto_auth_plugin_http.o adcmb.o
