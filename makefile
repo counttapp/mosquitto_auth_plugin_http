@@ -1,11 +1,11 @@
 CC=gcc
-MOSQUITTO=$(HOME)/mosquitto-1.1.3
+MOSQUITTO=../mosquitto
 INC=-I. -I$(MOSQUITTO)/lib -I$(MOSQUITTO)/src
 CFLAGS=-Wall -fpic -DMQAP_DEBUG
 
 LIBS=-lcurl
-OBJ=mosquitto_auth_plugin_keystone.o adcmb.o
-EXE=mosquitto_auth_plugin_keystone.so
+OBJ=mosquitto_auth_plugin_http.o adcmb.o
+EXE=mosquitto_auth_plugin_http.so
 
 .c.o:
 	$(CC) $(CFLAGS) $(INC) -c $<
