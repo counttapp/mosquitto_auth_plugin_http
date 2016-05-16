@@ -35,10 +35,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #pragma names restore
 #endif
 
-#ifndef DEFAULT_URI
-#define DEFAULT_URI "https://region-a.geo-1.identity.hpcloudsvc.com:35357/v2.0/tokens"
-#endif
-
 static char *http_uri = NULL;
 static char *http_proxy = NULL;
 
@@ -70,9 +66,6 @@ int mosquitto_auth_plugin_init(void **user_data,
 	}
     }
 
-    if (http_uri == NULL) {
-	http_uri = DEFAULT_URI;
-    }
 #ifdef MQAP_DEBUG
     fprintf(stderr, "URI = %s; proxy = %s\n", http_uri,
 	    http_proxy ? http_proxy : "null");
