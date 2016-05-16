@@ -1,0 +1,38 @@
+# Place your local configuration in /etc/mosquitto/conf.d/
+#
+# A full description of the configuration file is at
+# /usr/share/doc/mosquitto/examples/mosquitto.conf.example
+
+pid_file /var/run/mosquitto.pid
+
+persistence false
+persistence_location /var/lib/mosquitto/
+
+allow_anonymous false
+password_file /etc/mosquitto/passwd
+acl_file /etc/mosquitto/mosquitto_acl.conf
+
+log_dest file /var/log/mosquitto/mosquitto.log
+
+log_timestamp true
+log_type error
+log_type warning
+log_type notice
+log_type information
+
+auth_plugin /etc/mosquitto/mosquitto_auth_plugin_http.so
+auth_opt_http_uri http://yourapp.com/mqtt
+# auth_opt_http_proxy 10.1.1.1:8080
+
+listener 1883
+listener 8883
+
+tls_version tlsv1
+cafile /etc/mosquitto/certs/ca.crt
+certfile /etc/mosquitto/certs/server.crt
+keyfile /etc/mosquitto/certs/server.key
+require_certificate false
+
+include_dir /etc/mosquitto/conf.d
+
+sys_interval 1
