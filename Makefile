@@ -1,5 +1,5 @@
 CC=gcc
-MOSQUITTO=${BUILD_DIR}/mosquitto-${MOSQUITTO_VERSION}
+MOSQUITTO=${BUILD_DIR}
 INC=-I. -I$(MOSQUITTO)/lib -I$(MOSQUITTO)/src
 override CFLAGS += -Wall -fpic -DMQAP_DEBUG
 
